@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html><head>
+  <meta name="description" content="UI5 MVC example with JS view" />
+  <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+  <meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+  <script id='sap-ui-bootstrap' type='text/javascript'
+          src='https://sapui5.netweaver.ondemand.com/resources/sap-ui-core.js'
+          data-sap-ui-theme='sap_bluecrystal'
+          data-sap-ui-libs='sap.ui.core,sap.ui.commons,sap.m,sap.viz'></script>
+
+  </head>
+  <script>
+  var sUrl = "https://powerwebappp057134trial.hanatrial.ondemand.com/PowerWebApp/PowerOData.svc/Powers?$format=json";
+	oModel = new sap.ui.model.json.JSONModel();
+	
+	oModel.setSizeLimit(1000);
+	var electricity = [];
+	var gas = [];
+	var lastMonthE = [];
+	var lastMonthG = [];
+	var diffE;
+	var diffG;
+	var Data = [];
+
+	$.ajax({
+		type: 'GET',
+		async: true,
+		cache: false,
+		url: sUrl,
+		success: function (data) {
+			for (z=0; z<data.d.results.length; z++){
+				
+				console.log("previous:" + lastMonthE[z-1] + "; now: " + data.d.results[z].Electricity);
+				console.log("previous:" + lastMonthG[z-1] + "; now: " + data.d.results[z].Gas);
+
+				diffE = parseInt(data.d.results[z].Electricity) - parseInt(lastMonthE[z-1]);
+				diffG = parseInt(data.d.results[z].Gas) - parseInt(lastMonthG[z-1]);
+				//if (!isNaN(diffE)) {
+					console.log(diffE);
+					electricity[z]= diffE;
+					gas[z]= diffG;
+
+					Data.push({id: data.d.results[z].Id, month: data.d.results[z].Month, electricity: diffE, gas: diffG});
+				//}
+
+				lastMonthE[z] = data.d.results[z].Electricity;
+				lastMonthG[z] = data.d.results[z].Gas;
+			}
+			
+			oModel.setData({
+				modelData : Data
+			});
+			console.log(oModel);
+			
+		},
+		error: function(jqXHR, textStatus, errorThrown) { 
+					
+		},
+	});
+
+	console.log(oModel);
+
+	var oDataset = new sap.viz.ui5.data.FlattenedDataset({    
+		dimensions : [     
+		  {axis : 1,name : 'Month',value : "{month}"}     
+		],    
+		measures : [     
+		  {name : 'Electricity',value : '{electricity}'},
+		  {name : 'Gas',value : '{gas}'}  
+		],    
+		data : {path : "/modelData"}    
+	});  
+
+	var legendPosition = new sap.viz.ui5.types.Legend({layout: {  
+		position: "left"  
+	}}); 
+	
+	var oBarChart = new sap.viz.ui5.Column("bar",{
+		width : "80%",
+		height : "400px",
+		title : {
+			visible : true,
+			text : 'Electricity and Gas Household Consumption'
+		},
+		dataset : oDataset
+	 });
+	oBarChart.setModel(oModel);
+	oBarChart.placeAt("content");
+	
+	
+  </script>
+  <body class='sapUiBody'>
+    <div id='content'></div>
+  </body>
+</html>

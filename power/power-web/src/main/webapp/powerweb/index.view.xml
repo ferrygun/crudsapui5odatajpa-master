@@ -1,0 +1,40 @@
+<core:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m" controllerName="powerweb.index" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page title="Power Web">
+		<headerContent>
+			<Button icon="sap-icon://add" press="onAdd" />
+		</headerContent>
+		<Table id="idProductsTable" inset="false" items="{/Powers}"
+			itemPress="rowSelected">
+			<headerToolbar>
+				<Toolbar>
+					<Label text="Power"></Label>
+				</Toolbar>
+			</headerToolbar>
+			<columns>
+				<Column>
+					<Text text="Id" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true">
+					<Text text="Month" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true">
+					<Text text="Electricity" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right">
+					<Text text="Gas" />
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem type="Detail" detailPress="onDetailPress">
+					<cells>
+						<ObjectIdentifier title="{Id}" />
+						<Text text="{Month}" />
+						<Text text="{Electricity}" />
+						<Text text="{Gas}" />
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</Page>
+</core:View>
